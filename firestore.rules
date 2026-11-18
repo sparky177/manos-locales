@@ -1,0 +1,54 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{db}/documents {
+    function propio(uid) { return request.auth != null && request.auth.uid == uid; }
+    function admin() { return request.auth != null && exists(/databases/$(db)/documents/administradores/$(request.auth.uid)); }
+    function aprobado(uid) { return get(/databases/$(db)/documents/emprendimientos/$(uid)).data.estado == 'aprobado'; }
+    function texto(v,n) { return v is string && v.size() > 0 && v.size() <= n; }
+    match /administradores/{uid} { allow get: if propio(uid); }
+    match /usuarios/{uid} {
+      allow get: if propio(uid);
+      allow create: if propio(uid) && request.resource.data.keys().hasOnly(['creadoEn']) && request.resource.data.creadoEn == request.time;
+    }
+    match /emprendimientos/{uid} {
+      function perfilValido() {
+        let d = request.resource.data;
+        return d.keys().hasOnly(['nombre','descripcion','localidad','whatsapp','estado'])
+          && texto(d.nombre,80) && texto(d.descripcion,500) && texto(d.localidad,80)
+          && d.whatsapp is string && d.whatsapp.matches('^[1-9][0-9]{7,14}$');
+      }
+      allow read: if propio(uid) || admin() || resource.data.estado == 'aprobado';
+      allow create: if propio(uid) && perfilValido() && request.resource.data.estado == 'pendiente';
+      allow update: if perfilValido() && (
+        (propio(uid) && request.resource.data.estado == resource.data.estado) ||
+        (admin() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['estado']) && (
+          (request.resource.data.estado == 'aprobado' && resource.data.estado in ['pendiente','rechazado','suspendido']) ||
+          (request.resource.data.estado == 'rechazado' && resource.data.estado == 'pendiente') ||
+          (request.resource.data.estado == 'suspendido' && resource.data.estado == 'aprobado')
+        )));
+      match /productos/{id} {
+        function valido() {
+          let d = request.resource.data;
+          return d.keys().hasOnly(['nombre','descripcion','categoria','imagen','stock','precioCentavos','creadoEn','estado'])
+            && texto(d.nombre,80) && texto(d.descripcion,500)
+            && d.categoria in ['Alimentos','Artesanías','Textil','Bienestar']
+            && d.imagen in ['alfajores','brownie','cookies','lemon','trufas','budin','general']
+            && d.stock is int && d.stock >= 0 && d.stock <= 99999
+            && d.precioCentavos is int && d.precioCentavos >= 1 && d.precioCentavos <= 999999999;
+        }
+        allow read: if propio(uid) || admin() || (aprobado(uid) && resource.data.estado == 'publicado');
+        allow create: if propio(uid) && aprobado(uid) && valido() && request.resource.data.estado == 'publicado' && request.resource.data.creadoEn == request.time;
+        allow update: if resource.data.estado == 'publicado' && (
+          (propio(uid) && aprobado(uid) && valido() && request.resource.data.creadoEn == resource.data.creadoEn && request.resource.data.estado in ['publicado','archivado']) ||
+          (admin() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['estado']) && request.resource.data.estado == 'oculto'));
+      }
+    }
+    match /decisiones/{id} {
+      allow read: if admin();
+      allow create: if admin() && request.resource.data.keys().hasOnly(['ruta','estado','motivo','actor','fecha'])
+        && texto(request.resource.data.ruta,500) && texto(request.resource.data.motivo,250)
+        && request.resource.data.estado in ['aprobado','suspendido','rechazado','oculto']
+        && request.resource.data.actor == request.auth.uid && request.resource.data.fecha == request.time;
+    }
+  }
+}

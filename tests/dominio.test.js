@@ -1,0 +1,9 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {producto, filtrar, enlaceContacto, negocio} from '../sitio/js/dominio.js';
+const form={nombre:'Alfajores',descripcion:'Caja de cuatro',categoria:'Alimentos',imagen:'alfajores',precio:'6800,25',stock:'0'};
+test('convierte precio exacto a centavos y conserva stock cero',()=>{const p=producto(form);assert.equal(p.precioCentavos,680025);assert.equal(p.stock,0);});
+test('rechaza valores fuera del contrato',()=>{for(const cambio of [{precio:'0'},{precio:'1.001'},{stock:'-1'},{stock:'1.5'},{imagen:'foto-externa'},{categoria:'Otra'}])assert.throws(()=>producto({...form,...cambio}));});
+test('filtra por localidad, categoría y texto con o sin tildes',()=>{const p={...form,tienda:{nombre:'Rincón',localidad:'El Chaltén'}};assert.deepEqual(filtrar([p],'rincon','Alimentos','El Chaltén'),[p]);assert.deepEqual(filtrar([p],'rincon','Textil','El Chaltén'),[]);});
+test('el contacto incluye el producto sin alterar su stock',()=>{const p={...form,nombre:'Pan & té',tienda:{whatsapp:'5490000000000'}};const url=new URL(enlaceContacto(p));assert.equal(url.hostname,'wa.me');assert.ok(url.searchParams.get('text').includes('Pan & té'));assert.equal(p.stock,'0');});
+test('rechaza WhatsApp sin formato internacional numérico',()=>{assert.throws(()=>negocio({nombre:'Tienda',descripcion:'Artesanías',localidad:'Río Gallegos',whatsapp:'hola'}));});
