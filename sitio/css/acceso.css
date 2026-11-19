@@ -1,0 +1,5 @@
+.cuenta-caja { max-width: 31rem; margin: clamp(0rem, 4vw, 3rem) auto; }
+.cuenta-caja h1 { font-size: clamp(2rem, 5vw, 3.2rem); margin: .45em 0; }
+.sello { width: 3.5rem; padding: .4rem; background: #edefe2; border-radius: 1rem; }
+.cuenta-caja form { margin-block: 1.25rem; }
+.acciones { display: grid; gap: .7rem; }

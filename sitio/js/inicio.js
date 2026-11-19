@@ -1,15 +1,35 @@
-import {firebaseConfig} from './config.js';
-const aviso=document.getElementById('aviso');
-async function iniciar(){
-  if(!firebaseConfig.projectId||!firebaseConfig.apiKey)throw Error('Falta conectar esta instalación a Firebase. Completá la configuración web indicada en el README.');
-  const {actual,cerrar}=await import('./sesion.js');
-  const usuario=await actual();
-  const salida=document.getElementById('salir');
-  salida.hidden=!usuario;
-  salida.onclick=async()=>{try{await cerrar();location.href='/';}catch{aviso.textContent='No se pudo cerrar sesión.';}};
-  const pagina=document.body.dataset.pagina;
-  if(!usuario && ['panel','admin'].includes(pagina)){location.replace('/html/acceso.html');return;}
-  const mod=await import('./paginas/'+pagina+'.js');
-  await mod.mostrar(usuario);
+import { avisar, explicar } from './ui/controles.ui.js';
+
+const pagina = document.body.dataset.pagina;
+const destinos = {
+  inicio: 'inicio', producto: 'producto', emprendimiento: 'emprendimiento',
+  acceso: 'acceso', registro: 'acceso', cuenta: 'cuenta',
+  'panel-admin': 'panel-admin', 'panel-emprendedor': 'panel-emprendedor'
+};
+
+async function iniciar() {
+  if (pagina === 'inicio' && new URLSearchParams(location.search).has('producto')) {
+    location.replace('/html/producto.html' + location.search);
+    return;
+  }
+  const { actual, cerrar } = await import('./servicios/sesion.service.js');
+  const usuario = await actual();
+  if (!usuario && ['cuenta', 'panel-emprendedor', 'panel-admin'].includes(pagina)) {
+    location.replace('/html/acceso.html');
+    return;
+  }
+  if (usuario && ['acceso', 'registro'].includes(pagina)) {
+    location.replace('/html/cuenta.html');
+    return;
+  }
+  const salir = document.getElementById('salir');
+  salir.hidden = !usuario;
+  salir.onclick = async () => {
+    try { await cerrar(); location.href = '/'; }
+    catch (error) { avisar(explicar(error)); }
+  };
+  const controlador = await import('./paginas/' + destinos[pagina] + '.js');
+  await controlador.mostrar(usuario);
 }
-iniciar().catch(e=>{aviso.textContent=e.code==='permission-denied'?'Acceso denegado por Firebase. Revisá los permisos de la cuenta.':e.message;});
+
+iniciar().catch(error => avisar(explicar(error)));

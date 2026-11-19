@@ -1,6 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {producto, filtrar, enlaceContacto, negocio} from '../sitio/js/dominio.js';
+import {producto} from '../sitio/js/validaciones/producto.validator.js';
+import {negocio} from '../sitio/js/validaciones/emprendimiento.validator.js';
+import {filtrar} from '../sitio/js/servicios/filtros.js';
+import {enlaceContacto} from '../sitio/js/utilidades/whatsapp.js';
 const form={nombre:'Alfajores',descripcion:'Caja de cuatro',categoria:'Alimentos',imagen:'alfajores',precio:'6800,25',stock:'0'};
 test('convierte precio exacto a centavos y conserva stock cero',()=>{const p=producto(form);assert.equal(p.precioCentavos,680025);assert.equal(p.stock,0);});
 test('rechaza valores fuera del contrato',()=>{for(const cambio of [{precio:'0'},{precio:'1.001'},{stock:'-1'},{stock:'1.5'},{imagen:'foto-externa'},{categoria:'Otra'}])assert.throws(()=>producto({...form,...cambio}));});

@@ -1,6 +1,6 @@
-import {auth} from './firebase.js';
+import {auth} from '../config/firebase.js';
 import {createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut} from 'https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js';
-import {asegurarPerfil} from './datos.js';
+import {asegurarPerfil} from '../datos/usuarios.repository.js';
 export const cerrar=()=>signOut(auth);
 export async function identificar(correo,clave,registro){
   const operacion=registro?createUserWithEmailAndPassword:signInWithEmailAndPassword;

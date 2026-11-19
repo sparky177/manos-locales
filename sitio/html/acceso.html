@@ -1,4 +1,39 @@
 <!doctype html>
-<html lang="es-AR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Mi cuenta · Manos Locales</title><link rel="stylesheet" href="/css/base.css"></head>
-<body data-pagina="acceso"><header><a href="/" class="marca">Manos Locales</a><nav aria-label="Principal"><a href="/">Catálogo</a><a href="/html/panel.html">Mi emprendimiento</a><a href="/html/acceso.html">Mi cuenta</a><button id="salir" hidden>Salir</button></nav></header>
-<main><p role="status" id="aviso"></p><h1>Mi cuenta</h1><section class="caja"><p id="identidad"></p><form id="cuenta" method="post"><label>Correo electrónico<input name="correo" required type="email" autocomplete="email"></label><label>Contraseña<input name="clave" required type="password" minlength="6" autocomplete="current-password"></label><label>Acción<select name="accion"><option value="ingresar">Ingresar</option><option value="registrar">Crear una cuenta</option></select></label><button disabled>Continuar</button></form><a href="/html/panel.html" id="panel" hidden>Ir a mi emprendimiento</a> <a href="/html/admin.html" hidden id="admin">Ir a administración</a></section></main><footer>Manos Locales · Santa Cruz</footer><script type="module" src="/js/inicio.js"></script></body></html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ingresar · Manos Locales</title>
+  <link rel="icon" href="/assets/marca.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/acceso.css">
+</head>
+<body data-pagina="acceso">
+  <header class="cabecera">
+    <div class="contenedor barra">
+      <a class="marca" href="/"><img src="/assets/marca.svg" alt="">Manos Locales</a>
+      <nav aria-label="Principal">
+        <a href="/">Catálogo</a>
+        <a href="/html/panel-emprendedor.html">Mi emprendimiento</a>
+        <a href="/html/cuenta.html">Mi cuenta</a>
+        <button id="salir" hidden>Salir</button>
+      </nav>
+    </div>
+  </header>
+  <main class="contenedor">
+    <p role="status" id="aviso"></p>
+    <section class="cuenta-caja caja">
+      <img class="sello" src="/assets/marca.svg" alt="">
+      <h1>Ingresar</h1>
+      <form id="credenciales" method="post">
+        <label>Correo electrónico<input name="correo" type="email" autocomplete="email" required></label>
+        <label>Contraseña<input name="clave" type="password" autocomplete="current-password" minlength="6" required></label>
+        <button id="continuar" disabled>Ingresar</button>
+      </form>
+      <p>¿Es tu primera vez? <a href="/html/registro.html">Creá una cuenta</a></p>
+    </section>
+  </main>
+  <footer><div class="contenedor">Manos Locales <span>· Santa Cruz, Argentina</span></div></footer>
+  <script type="module" src="/js/inicio.js"></script>
+</body>
+</html>

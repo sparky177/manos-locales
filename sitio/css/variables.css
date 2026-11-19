@@ -1,0 +1,16 @@
+:root {
+  color-scheme: light;
+  --papel: #f7f6f1;
+  --superficie: #fffefa;
+  --tinta: #493532;
+  --suave: #695f59;
+  --linea: #dcd8cc;
+  --salvia: #d4d6b0;
+  --oliva: #505630;
+  --cielo: #b0c5d6;
+  --rosa: #d6b1b0;
+  --radio: 1.25rem;
+  --ancho: 72rem;
+  --texto: "Poppins", "Segoe UI", system-ui, sans-serif;
+  --titular: Georgia, "Times New Roman", serif;
+}

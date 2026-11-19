@@ -1,1 +1,30 @@
-*{box-sizing:border-box}body{margin:0;font:16px/1.55 system-ui,sans-serif;color:#422f2b;background:#faf8f3}header,main,footer{padding:1.1rem max(5vw,calc((100vw - 1100px)/2))}header{background:#fffdf8;border-bottom:1px solid #dfd9cf;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}a{color:#4e542e;text-underline-offset:.22em}.marca{font: bold 1.6rem Georgia,serif;text-decoration:none;color:#493630}nav{display:flex;align-items:center;gap:1rem;flex-wrap:wrap}main{min-height:80vh}footer{border-top:1px solid #ddd6c7;color:#63594c}h1,h2,h3{line-height:1.15}h1,h2{font-family:Georgia,serif}h1{font-size:clamp(2.1rem,5vw,4rem);margin:.5em 0}.portada{display:grid;grid-template-columns:3fr 2fr;align-items:center;overflow:hidden;border-radius:1.25rem;background:#e9e5d4}.portada div{padding:clamp(1.2rem,4vw,3.4rem)}.portada img{width:100%;height:270px;object-fit:cover}small{letter-spacing:.1em;color:#535730}.filtros,.grilla{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr))}.grilla{grid-template-columns:repeat(auto-fill,minmax(min(100%,230px),1fr))}.tarjeta,.caja,#detalle{background:#fffdf8;border:1px solid #ded7c9;border-radius:1rem;padding:1.25rem;margin:1rem 0}.tarjeta img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:.6rem}.mini{width:100px;height:76px;object-fit:cover;border-radius:.5rem}.ficha{width:min(100%,420px);border-radius:1rem}form{max-width:650px;display:grid;gap:.85rem}label{display:grid;gap:.25rem;font-weight:600}input,textarea,select,button{font:inherit;padding:.65rem .85rem;border-radius:.55rem;border:1px solid #a9a793}textarea{min-height:5rem}button,.accion{cursor:pointer;background:#515832;color:white;font-weight:600;border:0}button:disabled{opacity:.65;cursor:wait}.accion{display:inline-block;border-radius:.55rem;padding:.65rem .85rem;text-decoration:none}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #8b522d;outline-offset:3px}article button{margin:.25rem .4rem .25rem 0}.fila{border-top:1px solid #ded7c9;padding:.9rem 0}#aviso:not(:empty){background:#fff0d5;padding:.8rem;border-radius:.5rem}#aviso:empty{margin:0}h2{margin-top:1.6em}[hidden]{display:none!important}@media(max-width:600px){.portada{grid-template-columns:1fr}.portada img{height:145px}nav{gap:.65rem;font-size:.9rem}}
+@import url("./variables.css");
+@import url("./componentes.css");
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--papel); color: var(--tinta); font: 1rem/1.55 var(--texto); }
+.contenedor { width: min(calc(100% - 2.5rem), var(--ancho)); margin-inline: auto; }
+main { min-height: 75vh; padding-block: clamp(1.2rem, 3.5vw, 3rem) 4rem; }
+a { color: var(--oliva); text-underline-offset: .2em; }
+h1, h2, h3, p { overflow-wrap: anywhere; }
+h1, h2, h3 { line-height: 1.13; }
+h1, h2 { font-family: var(--titular); font-weight: 500; letter-spacing: -.035em; }
+h1 { font-size: clamp(2.2rem, 5vw, 4.2rem); margin: .25em 0; }
+h2 { font-size: clamp(1.65rem, 3vw, 2.5rem); margin-block: .75em .5em; }
+small { font-size: .76rem; font-weight: 700; color: var(--oliva); letter-spacing: .08em; text-transform: uppercase; }
+.cabecera, footer { background: var(--superficie); border-block-end: 1px solid var(--linea); }
+.barra, nav, .marca { display: flex; align-items: center; }
+.barra { justify-content: space-between; padding-block: .85rem; gap: .6rem 1.5rem; flex-wrap: wrap; }
+.marca { gap: .45rem; color: var(--tinta); font: 600 1.55rem var(--titular); text-decoration: none; }
+.marca img { width: 2.5rem; height: 2.5rem; }
+nav { gap: .15rem; flex-wrap: wrap; }
+nav a, nav button { color: var(--tinta); background: transparent; padding: .55rem .85rem; border-radius: 2rem; font: 600 .92rem var(--texto); text-decoration: none; }
+nav a:hover, nav a[aria-current], nav button:hover { color: var(--tinta); background: var(--salvia); }
+footer { padding-block: 1.4rem; border-block-start: 1px solid var(--linea); font-weight: 650; }
+footer span { color: var(--suave); font-weight: 400; }
+:focus-visible { outline: 3px solid #89552e; outline-offset: 3px; }
+@media (max-width: 600px) {
+  .contenedor { width: calc(100% - 1.5rem); }
+  nav a, nav button { padding: .55rem; font-size: .85rem; }
+}

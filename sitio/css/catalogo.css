@@ -1,0 +1,34 @@
+.portada { display: grid; grid-template-columns: 1.2fr 1fr; isolation: isolate; position: relative; overflow: hidden; background: var(--salvia); border-radius: 1.6rem; }
+.portada-texto { padding: clamp(1.6rem, 4vw, 3.5rem); align-self: center; }
+.portada h1 { font-size: clamp(2.5rem, 5.3vw, 4.85rem); line-height: .99; margin-block: .25em; }
+.portada h1 em { color: #48502e; }
+.portada p { max-width: 39ch; margin-block: .7rem 1.25rem; }
+.portada-foto { position: relative; align-self: stretch; min-height: 14rem; margin: 1.4rem 1.4rem 0 0; }
+.portada-foto::before { content: ""; position: absolute; inset: 4% -8% -20% 18%; border-radius: 50% 50% 0 0; background: var(--rosa); transform: rotate(8deg); }
+.portada-foto img { position: absolute; width: 94%; height: 100%; object-fit: cover; border-radius: 45% 45% 0 0; }
+.encabezado-lista { display: flex; justify-content: space-between; align-items: baseline; gap: .8rem; margin-top: 1.7rem; }
+#conteo, .tarjeta p { color: var(--suave); font-size: .9rem; }
+.filtros { display: grid; grid-template-columns: 1.5fr 1fr 1fr; padding: 1.2rem; background: #e9eeef; border-radius: var(--radio); }
+.grilla { display: grid; grid-template-columns: repeat(auto-fill,minmax(min(100%, 14rem), 1fr)); gap: 1rem; margin-block: 1.4rem; align-items: start; }
+.tarjeta { position: relative; background: var(--superficie); border: 1px solid var(--linea); border-radius: var(--radio); overflow: hidden; }
+.tarjeta:focus-within, .tarjeta:hover { border-color: var(--oliva); }
+.tarjeta img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; }
+.tarjeta-cuerpo { padding: 1.05rem; }
+.tarjeta h3 { font-size: 1.25rem; margin: .3rem 0 .5rem; }
+.tarjeta h3 a { color: var(--tinta); text-decoration: none; }
+.tarjeta h3 a::after { content: ""; position: absolute; inset: 0; }
+.tarjeta p { margin: .45rem 0 0; }
+.detalle { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); border-radius: var(--radio); overflow: hidden; background: var(--superficie); }
+.detalle > img { width: 100%; height: 100%; max-height: 34rem; object-fit: cover; }
+.detalle-info, .cabecera-tienda { padding: clamp(1.4rem, 4vw, 3rem); }
+.detalle-info h1 { font-size: clamp(2rem, 4.5vw, 3.5rem); }
+.precio { font-size: 1.6rem; }
+.detalle-info .accion { display: flex; margin-top: 1.5rem; }
+.cabecera-tienda { background: var(--salvia); border-radius: var(--radio); }
+@media (max-width: 650px) {
+  .filtros, .detalle { grid-template-columns: 1fr; }
+  .portada { grid-template-columns: 1fr; }
+  .portada-foto { height: 10rem; min-height: 0; margin: 0 1.2rem; }
+  .portada-foto img { width: 100%; border-radius: 4rem 4rem 0 0; }
+  .detalle > img { max-height: 19rem; }
+}
