@@ -8,6 +8,8 @@ Desde esta carpeta con Node instalado, ejecutar `npm start` y abrir [el catálog
 
 ## Conectar el proyecto del grupo
 
+La versión de la exposición ya usa el proyecto `spark-ca470`. Para ejecutarla en otra computadora alcanza con iniciar la web como se indica arriba. Los pasos siguientes documentan la configuración de Firebase y las pruebas por rol.
+
 1. Crear un proyecto Spark en la [consola Firebase](https://console.firebase.google.com/) y registrar una aplicación web. Copiar su objeto de configuración pública en `sitio/js/config.js` como valor de `firebaseConfig`.
 2. En Authentication habilitar el proveedor **Correo electrónico/contraseña**. En la configuración de dominios autorizados comprobar y, si corresponde, agregar `localhost`.
 3. Crear Cloud Firestore en modo producción. En la pestaña Reglas copiar el contenido completo de `firestore.rules` y publicar. También se pueden desplegar las reglas con la CLI mediante `firebase deploy --only firestore:rules --project ID_DEL_PROYECTO`.
@@ -17,6 +19,8 @@ Desde esta carpeta con Node instalado, ejecutar `npm start` y abrir [el catálog
 7. Verificar con otra cuenta común que la administración queda restringida. En una prueba de reglas comprobar por separado que esa cuenta no puede escribir en la ruta del propietario original y que un visitante no puede leer su producto oculto ni siquiera por ID. Registrar la fecha, versión y resultado real.
 
 ## Archivos y recorrido para la defensa
+
+El 18 de noviembre de 2026 el equipo comprobó el recorrido con Firebase desde la web local. La administradora aprobó GatoNegro y la persona titular vio el cambio al recargar su panel. Publicó un producto, verificó que apareciera en el catálogo y abrió el contacto por WhatsApp. También probó ocultar un producto desde administración y confirmó que desaparecía del catálogo al recargarlo.
 
 | Ruta | Responsabilidad |
 |---|---|
