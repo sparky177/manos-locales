@@ -4,15 +4,22 @@ Catálogo de emprendimientos de Santa Cruz. La web se ejecuta en la computadora 
 
 ## Iniciar la web
 
-Desde esta carpeta con Node instalado, ejecutar `npm start` y abrir [el catálogo](http://localhost:5173). El servidor utiliza los módulos incluidos en Node. Las páginas requieren internet para cargar el SDK web de Firebase y acceder al proyecto. Ejecutar `npm test` para comprobar las reglas de negocio de JavaScript.
+Con Node compatible con Vite 8 (20.19+, 22.12+ o una versión posterior compatible), ejecutar desde la raíz del repositorio:
+
+```sh
+npm ci
+npm start
+```
+
+Abrir [el catálogo](http://localhost:5173/). Vite sirve las ocho pantallas HTML en desarrollo. El navegador necesita internet para acceder al SDK de Firebase, Authentication y Firestore. Para generar la versión distribuible en `dist/`, ejecutar `npm run build`. Para abrir esa compilación en el puerto 4173, ejecutar `npm run preview`.
 
 ## Conectar el proyecto del grupo
 
 La versión de la exposición ya usa el proyecto `spark-ca470`. Para ejecutarla en otra computadora alcanza con iniciar la web como se indica arriba. Los pasos siguientes documentan la configuración de Firebase y las pruebas por rol.
 
-1. Crear un proyecto Spark en la [consola Firebase](https://console.firebase.google.com/) y registrar una aplicación web. Copiar su objeto de configuración pública en `sitio/js/config/proyecto.js` como valor de `firebaseConfig`.
+1. Crear un proyecto Spark en la [consola Firebase](https://console.firebase.google.com/) y registrar una aplicación web. Para otro proyecto, copiar `.env.example` a `.env.local`, reemplazar allí el objeto público `VITE_FIREBASE_CONFIG` y reiniciar Vite. La configuración predeterminada del grupo está en `js/config/firebase.js`.
 2. En Authentication habilitar el proveedor **Correo electrónico/contraseña**. En la configuración de dominios autorizados comprobar y, si corresponde, agregar `localhost`.
-3. Crear Cloud Firestore en modo producción. En la pestaña Reglas copiar el contenido completo de `firestore.rules` y publicar. También se pueden desplegar las reglas con la CLI mediante `firebase deploy --only firestore:rules --project ID_DEL_PROYECTO`.
+3. Crear Cloud Firestore en modo producción. En la pestaña Reglas copiar el contenido completo de `firebase/firestore.rules` y publicar. También se pueden desplegar las reglas con la CLI mediante `firebase deploy --only firestore:rules --project ID_DEL_PROYECTO`.
 4. Registrar dos cuentas de prueba desde Mi cuenta. Reservar una para administración. En Authentication copiar su UID. Desde Firestore en la consola crear la colección `administradores` y un documento con ese UID exacto como ID y el campo `etiqueta` de tipo string con valor `demo`. La existencia del documento concede administración. Mantener esta operación en la consola del responsable.
 5. Ingresar con la otra cuenta, solicitar el alta del emprendimiento con un número comercial acordado para la demo y abrir un segundo perfil de navegador para la cuenta admin. En Mi cuenta → Ir a administración, aprobar. Recargar el panel del propietario y publicar un producto.
 6. Desde una ventana sin sesión, abrir el catálogo, buscar por localidad y categoría, consultar el producto y verificar el enlace a WhatsApp. Los listados se actualizan al cargar la página. Suspender el negocio u ocultar el producto, recargar el catálogo y comprobar que la publicación desaparece.
@@ -27,46 +34,99 @@ El 18 de noviembre de 2026 el equipo comprobó el recorrido con Firebase desde l
 
 ```text
 manos-locales/
-├── sitio/                       Archivos que entrega el servidor al navegador
-│   ├── index.html               Catálogo y filtros
-│   ├── html/
-│   │   ├── producto.html        Ficha y contacto por WhatsApp
-│   │   ├── emprendimiento.html  Perfil público y productos publicados
-│   │   ├── acceso.html, registro.html, cuenta.html
-│   │   ├── panel-emprendedor.html, panel-admin.html
-│   │   └── panel.html, admin.html     Redirecciones de enlaces anteriores
-│   ├── css/
-│   │   ├── variables.css, base.css, componentes.css
-│   │   └── catalogo.css, acceso.css, paneles.css
-│   ├── assets/                  Marca y galería de imágenes
-│   └── js/
-│       ├── inicio.js            Sesión, acceso a la pantalla y carga del controlador
-│       ├── config/              Proyecto Firebase, SDK y opciones de la galería
-│       ├── datos/               Repositorios de usuarios, emprendimientos y productos
-│       ├── servicios/           Sesión, filtros, catálogo, fichas y moderación
-│       ├── validaciones/        Campos del negocio y del producto
-│       ├── ui/                  Controles, mensajes y tarjetas reutilizables
-│       ├── paginas/             Eventos y presentación de cada pantalla
-│       └── utilidades/          Formato en pesos y enlace a WhatsApp
-├── firestore.rules, firebase.json
-├── tests/                       Validaciones y reglas de negocio de JavaScript
-├── docs/                        Requisitos, decisiones y modelo de datos
-└── servidor.mjs, package.json, README.md
+├── index.html
+├── html/
+│   ├── producto.html
+│   ├── emprendimiento.html
+│   ├── acceso.html
+│   ├── registro.html
+│   ├── cuenta.html
+│   ├── panel-emprendedor.html
+│   └── panel-admin.html
+├── css/
+│   ├── variables.css
+│   ├── base.css
+│   ├── componentes.css
+│   ├── catalogo.css
+│   ├── acceso.css
+│   ├── emprendedor.css
+│   └── admin.css
+├── js/
+│   ├── config/
+│   │   ├── firebase.js
+│   │   └── catalogos.js
+│   ├── datos/
+│   │   ├── usuarios.repository.js
+│   │   ├── emprendimientos.repository.js
+│   │   ├── productos.repository.js
+│   │   └── archivos.repository.js
+│   ├── servicios/
+│   │   ├── sesion.service.js
+│   │   ├── emprendimientos.service.js
+│   │   ├── productos.service.js
+│   │   └── moderacion.service.js
+│   ├── validaciones/
+│   │   ├── cuenta.validator.js
+│   │   ├── emprendimiento.validator.js
+│   │   └── producto.validator.js
+│   ├── ui/
+│   │   ├── navegacion.ui.js
+│   │   ├── mensajes.ui.js
+│   │   ├── productos.ui.js
+│   │   ├── emprendimiento.ui.js
+│   │   └── admin.ui.js
+│   ├── paginas/
+│   │   ├── inicio.js
+│   │   ├── producto.js
+│   │   ├── emprendimiento.js
+│   │   ├── acceso.js
+│   │   ├── registro.js
+│   │   ├── cuenta.js
+│   │   ├── panel-emprendedor.js
+│   │   └── panel-admin.js
+│   └── utilidades/
+│       ├── moneda.js
+│       └── whatsapp.js
+├── public/assets/
+│   ├── imagenes/
+│   ├── iconos/
+│   └── fuentes/
+├── firebase/
+│   ├── firestore.rules
+│   ├── firestore.indexes.json
+│   └── storage.rules
+├── tests/
+│   ├── validaciones/
+│   └── reglas/
+├── docs/
+├── .env.example
+├── .gitignore
+├── firebase.json
+├── vite.config.js
+├── package.json
+├── package-lock.json
+└── README.md
 ```
 
-El servidor publica únicamente `sitio/`. Node sirve archivos y ejecuta las pruebas. Los módulos de JavaScript se cargan directamente en el navegador. Acceso y registro comparten el controlador del formulario de credenciales. Ambos paneles comparten los estilos de formularios y estados. Cada producto guarda el identificador de una imagen incluida en la galería.
+Cada HTML carga la navegación común, que resuelve la sesión y abre el controlador correspondiente en `js/paginas/`. Los servicios coordinan las operaciones, los repositorios acceden a los datos y los módulos de `ui/` actualizan el DOM. `archivos.repository.js` traduce el identificador guardado en Firestore a una imagen de la galería local. `fuentes/` queda disponible para las tipografías del diseño. Las reglas de Storage cierran el acceso y las consultas actuales usan los índices automáticos de Firestore.
+
+## Pruebas
+
+`npm test` ejecuta las validaciones y las pruebas de la galería. Para probar los permisos en un proyecto local aislado, iniciar los emuladores de Authentication y Firestore con Firebase CLI y Java compatible. Desde la raíz, ejecutar `firebase emulators:exec --only auth,firestore --project demo-manos-locales "npm run test:reglas"`. Las pruebas se conectan a los puertos locales 9099 y 8080. [Guía de emuladores de Firebase](https://firebase.google.com/docs/emulator-suite/install_and_configure)
 
 ## Recorrido sugerido para cuatro integrantes
+
+Con el árbol nuevo pasaron siete pruebas de validación, catálogo y galería, y tres pruebas de permisos con los emuladores. En el navegador se comprobó la carga del catálogo real, el enlace a WhatsApp de la ficha y la apertura del panel con la sesión existente. La compilación de Vite también cargó los productos como visitante.
 
 | Parte | Qué mostrar | Dónde seguir la operación |
 |---|---|---|
 | Catálogo y diseño | Filtrar, abrir una ficha y visitar el emprendimiento | `paginas/inicio.js` aplica el filtro y `ui/productos.ui.js` construye la tarjeta. `css/catalogo.css` adapta la portada y las fichas a la pantalla. |
 | Cuentas y permisos | Ingresar y explicar por qué cada cuenta ve un panel distinto | `servicios/sesion.service.js` obtiene la identidad de Authentication. `datos/usuarios.repository.js` consulta el rol. Firestore vuelve a comprobar los permisos en cada operación. |
-| Publicación | Guardar un precio y encontrar el documento en Firestore | `paginas/panel-emprendedor.js` recibe el formulario. `validaciones/producto.validator.js` convierte pesos a centavos. `datos/productos.repository.js` guarda el producto en el emprendimiento de la cuenta. |
+| Publicación | Guardar un precio y encontrar el documento en Firestore | `js/paginas/panel-emprendedor.js` recibe el formulario y llama a `js/servicios/productos.service.js`. `validaciones/producto.validator.js` convierte pesos a centavos. `datos/productos.repository.js` guarda el producto en el emprendimiento de la cuenta. |
 | Moderación y Git | Ocultar un producto, recargar el catálogo y comparar las versiones en GitHub | `servicios/moderacion.service.js` guarda el estado y la decisión en una escritura atómica. El catálogo consulta emprendimientos aprobados y productos publicados. |
 
 El [modelo de datos](docs/modelo.md) contiene las colecciones, los permisos y ejemplos de documentos. La versión probada antes de la reorganización está en el commit `f3a9b65`. La reorganización conserva las colecciones, los identificadores de documentos y las reglas de Firebase.
 
 ## GitHub
 
-El [repositorio del equipo](https://github.com/sparky177/manos-locales) contiene el proyecto. La rama `frontend-modular` reúne el cambio de estructura y de presentación para poder compararlo con `main`. Al compartir una versión, indiquen la rama o el commit utilizado para la demostración.
+El [repositorio del equipo](https://github.com/sparky177/manos-locales) contiene el proyecto en `main`. La reorganización se desarrolló en `frontend-modular`. Para la defensa pueden comparar el árbol actual con el commit `f3a9b65` y seguir los cambios de cada módulo.

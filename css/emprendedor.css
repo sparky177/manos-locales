@@ -1,0 +1,6 @@
+#perfil, #gestion { max-width: 49rem; margin-block: 1rem; }
+.campos { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr)); }
+#estado:not(:empty) { display: inline-block; padding: .5rem .9rem; background: var(--salvia); border-radius: .7rem; }
+#identidad, #ayuda-whatsapp { color: var(--suave); }
+#ayuda-whatsapp { font-size: .87rem; }
+.mini { width: 7rem; height: 5rem; object-fit: cover; border-radius: .7rem; }

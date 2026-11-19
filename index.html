@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Catálogo · Manos Locales</title>
+  <link rel="icon" href="/assets/iconos/marca.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/catalogo.css">
+</head>
+<body data-pagina="inicio">
+  <header class="cabecera">
+    <div class="contenedor barra">
+      <a class="marca" href="/"><img src="/assets/iconos/marca.svg" alt="">Manos Locales</a>
+      <nav aria-label="Principal">
+        <a href="/" aria-current="page">Catálogo</a>
+        <a href="/html/panel-emprendedor.html">Mi emprendimiento</a>
+        <a href="/html/cuenta.html">Mi cuenta</a>
+        <button id="salir" hidden>Salir</button>
+      </nav>
+    </div>
+  </header>
+  <main class="contenedor">
+    <p role="status" id="aviso"></p>
+    <section class="portada">
+      <div class="portada-texto">
+        <small>Hecho en Santa Cruz</small>
+        <h1>Encontrá algo hecho<br><em>cerca tuyo.</em></h1>
+        <p>Descubrí piezas únicas, sabores locales y productos de nuestra comunidad.</p>
+        <a class="accion" href="#listado">Explorar productos <span aria-hidden="true">↓</span></a>
+      </div>
+      <div class="portada-foto"><img src="/assets/imagenes/alfajores.png" alt="Alfajores artesanales"></div>
+    </section>
+    <section id="listado">
+      <div class="encabezado-lista"><h2>Catálogo local</h2><p id="conteo" aria-live="polite">Cargando productos…</p></div>
+      <form class="filtros" id="filtros">
+        <label>Buscar<input id="buscar" type="search" placeholder="Producto o emprendimiento"></label>
+        <label>Categoría<select id="categoria"><option value="">Todas las categorías</option></select></label>
+        <label>Localidad<select id="localidad"><option value="">Todas las localidades</option></select></label>
+      </form>
+      <div class="grilla" id="productos"></div>
+      <div class="caja" id="vacio" hidden><p>No hay productos para esta búsqueda.</p><button id="limpiar">Limpiar filtros</button></div>
+    </section>
+  </main>
+  <footer><div class="contenedor">Manos Locales <span>· Santa Cruz, Argentina</span></div></footer>
+  <script type="module" src="/js/ui/navegacion.ui.js"></script>
+</body>
+</html>

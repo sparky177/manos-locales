@@ -1,0 +1,9 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Las fotos de esta versión se sirven desde public/assets/imagenes.
+    match /{archivo=**} {
+      allow read, write: if false;
+    }
+  }
+}

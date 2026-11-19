@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ingresar · Manos Locales</title>
+  <link rel="icon" href="/assets/iconos/marca.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/acceso.css">
+</head>
+<body data-pagina="acceso">
+  <header class="cabecera">
+    <div class="contenedor barra">
+      <a class="marca" href="/"><img src="/assets/iconos/marca.svg" alt="">Manos Locales</a>
+      <nav aria-label="Principal">
+        <a href="/">Catálogo</a>
+        <a href="/html/panel-emprendedor.html">Mi emprendimiento</a>
+        <a href="/html/cuenta.html">Mi cuenta</a>
+        <button id="salir" hidden>Salir</button>
+      </nav>
+    </div>
+  </header>
+  <main class="contenedor">
+    <p role="status" id="aviso"></p>
+    <section class="cuenta-caja caja">
+      <img class="sello" src="/assets/iconos/marca.svg" alt="">
+      <h1>Ingresar</h1>
+      <form id="credenciales" method="post">
+        <label>Correo electrónico<input name="correo" type="email" autocomplete="email" required></label>
+        <label>Contraseña<input name="clave" type="password" autocomplete="current-password" minlength="6" required></label>
+        <button id="continuar" disabled>Ingresar</button>
+      </form>
+      <p>¿Es tu primera vez? <a href="/html/registro.html">Creá una cuenta</a></p>
+    </section>
+  </main>
+  <footer><div class="contenedor">Manos Locales <span>· Santa Cruz, Argentina</span></div></footer>
+  <script type="module" src="/js/ui/navegacion.ui.js"></script>
+</body>
+</html>
