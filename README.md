@@ -116,6 +116,8 @@ Cada HTML carga la navegación común, que resuelve la sesión y abre el control
 
 ## Recorrido sugerido para cuatro integrantes
 
+El [inventario para la exposición](docs/estado-para-la-exposicion.md) reúne las funciones actuales, el trabajo pendiente y una distribución propuesta de los 80 minutos.
+
 Con el árbol nuevo pasaron siete pruebas de validación, catálogo y galería, y tres pruebas de permisos con los emuladores. En el navegador se comprobó la carga del catálogo real, el enlace a WhatsApp de la ficha y la apertura del panel con la sesión existente. La compilación de Vite también cargó los productos como visitante.
 
 | Parte | Qué mostrar | Dónde seguir la operación |
