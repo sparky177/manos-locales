@@ -14,3 +14,4 @@ export function publicar(uid, id, datos) {
 
 export const editar = (uid, id, datos) => updateDoc(productoRef(uid, id), datos);
 export const retirar = (uid, id) => updateDoc(productoRef(uid, id), { estado: 'archivado' });
+export const solicitarRevision = (uid, id) => updateDoc(productoRef(uid, id), { estado: 'pendiente_revision' });

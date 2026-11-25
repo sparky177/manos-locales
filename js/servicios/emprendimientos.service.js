@@ -4,7 +4,7 @@ import { productosDe } from './productos.service.js';
 import { negocio } from '../validaciones/emprendimiento.validator.js';
 
 export function guardarPerfil(uid, tienda, formulario) {
-  const datos = negocio(formulario);
+  const datos = negocio(formulario, tienda?.localidad);
   return tienda ? editarTienda(uid, datos) : solicitar(uid, datos);
 }
 

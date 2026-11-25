@@ -18,7 +18,7 @@ El contacto comercial se realizará por WhatsApp sin exigir registro. Los pagos 
 
 Visitante: puede explorar el catálogo, buscar, filtrar, consultar productos y emprendimientos y abrir el enlace de WhatsApp.
 
-Usuario registrado: dispone de las acciones públicas y de funciones personales propuestas, como favoritos e historial de contactos consultados. La política de reportes queda por confirmar.
+Usuario registrado: dispone de las acciones públicas, puede guardar productos en favoritos, reportar fichas y consultar sus casos. El historial de contactos consultados sigue como propuesta.
 
 Emprendedor: es un usuario registrado con un emprendimiento asociado. Gestiona su perfil y sus productos según el estado de aprobación de su emprendimiento; también puede usar la vista de comprador.
 
@@ -44,9 +44,11 @@ Criterio de aceptación: un visitante puede recorrer el catálogo sin cuenta. Un
 
 ### RF03 Búsqueda y filtros
 
-La aplicación permitirá buscar por nombre y filtrar por categoría y localidad. Los filtros se podrán combinar y restablecer. La búsqueda de emprendimientos también deberá contemplarse, según la experiencia prevista en el prototipo.
+El catálogo ofrece dos vistas públicas. Productos permite buscar por nombre de producto o negocio y filtrar por categoría y localidad. Emprendimientos permite buscar negocios aprobados por nombre comercial y localidad, incluso cuando todavía tienen el catálogo vacío.
 
-Criterio de aceptación: los resultados cumplen los filtros seleccionados; si no hay coincidencias, se muestra un estado vacío y una forma de modificar la búsqueda. El tipo de coincidencia de texto queda pendiente.
+Ambas vistas y el formulario del emprendimiento comparten la lista de localidades de Santa Cruz. La ubicación de cada producto proviene de su emprendimiento. El selector incluye localidades aun cuando todavía no tienen resultados. Los nombres anteriores se reconocen con o sin tildes, mayúsculas y espacios repetidos. Un nombre anterior fuera de la lista sigue disponible en el filtro si tiene contenido visible y el titular puede conservarlo o corregirlo al editar su perfil. La lista base toma como referencia el apartado de Santa Cruz del [INDEC](https://biblioteca.indec.gob.ar/bases/minde/2mi548_3_2.pdf) y las denominaciones de las [comisiones de fomento provinciales](https://noticias.santacruz.gob.ar/organismos/gobierno/provincia-realizo-mesas-de-trabajo-tecnico-con-las-comisiones-de-fomento).
+
+La búsqueda admite coincidencias parciales sin distinguir mayúsculas ni tildes. En Productos, **Hasta ($)** acepta un precio máximo inclusivo en pesos. El campo vacío permite ver cualquier precio. Se puede ordenar por más recientes (predeterminado), menor precio o mayor precio. Ante precios iguales aparece primero el producto más reciente. **Limpiar filtros** restablece los controles y el orden inicial.
 
 ### RF04 Ficha de producto y emprendimiento
 
@@ -56,33 +58,35 @@ Criterio de aceptación: desde un producto puede identificarse quién lo ofrece 
 
 ### RF05 Contacto por WhatsApp
 
-El botón de contacto abrirá WhatsApp con el número del emprendimiento y un mensaje propuesto que identifique el producto. Estará disponible sin registro.
+Cada visitante puede consultar sin registrarse. Desde el perfil aprobado se prepara una consulta general, aun con el catálogo vacío. Desde la ficha del producto el mensaje incluye el artículo elegido. El titular ve un aviso sobre el uso público de su número comercial antes de guardar el perfil.
 
 Criterio de aceptación: el enlace apunta al contacto del emprendimiento correcto y el usuario decide si envía el mensaje. Abrir el enlace no crea un pedido, no confirma una conversación y no descuenta stock.
 
-### RF06 Funciones personales propuestas
+### RF06 Favoritos y propuesta de historial
 
-Favoritos e historial sincronizado requieren una cuenta. El historial se denominará contactos consultados y registrará la intención de contacto desde la aplicación. Su inclusión para el 17 queda pendiente. Los favoritos locales de visitantes serán opcionales y no deben prometer sincronización.
+Una cuenta puede guardar y quitar productos desde el catálogo, el listado de un emprendimiento y la ficha. Mi cuenta muestra los favoritos privados con los datos actuales del catálogo. Guardar dos veces conserva un único favorito. Si el producto deja de ser público, se puede quitar el vínculo sin acceder a sus datos. Un visitante puede iniciar sesión y volver a la ficha para guardarlo.
+
+El historial de contactos consultados queda como propuesta para registrar la intención de contacto de una cuenta desde la aplicación.
 
 ## Requisitos de gestión y moderación
 
 ### RF07 Alta del emprendimiento
 
-Un usuario podrá solicitar el alta de un único emprendimiento e informar sus datos públicos. La solicitud tendrá un estado consultable. Se propone que la administración la apruebe o rechace con un motivo.
+Cada cuenta puede solicitar el alta de un único emprendimiento. La solicitud comienza pendiente. Administración registra su decisión con un motivo y el titular puede consultarlo en su panel.
 
-Criterio de aceptación: la misma cuenta no puede crear un segundo emprendimiento; el solicitante puede consultar el estado del primero. Los detalles de corrección y reenvío quedan pendientes.
+Si administración rechaza una solicitud, el titular puede corregir los datos y guardarlos. Al elegir **Volver a enviar a revisión**, el mismo emprendimiento vuelve a pendiente. Solo la aprobación de administración habilita su publicación. Visitantes y otras cuentas comunes carecen de acceso al motivo.
 
 ### RF08 Gestión del perfil propio
 
 El propietario podrá editar los campos habilitados de su emprendimiento. La relación de propiedad no se cambia desde el formulario público.
 
-Criterio de aceptación: un usuario no puede modificar el emprendimiento de otra persona, incluso si intenta hacerlo fuera de la interfaz. Falta definir qué cambios requieren una nueva revisión.
+Guardar cambios en el perfil conserva su estado. Firestore comprueba quién es el titular. En caso de suspensión, solo administración puede reactivar el negocio.
 
 ### RF09 Gestión de productos
 
-El propietario podrá crear, consultar, editar y retirar sus productos. Se contemplan nombre, descripción, precio, categoría, stock e imágenes. El máximo de cinco imágenes se conserva como propuesta del PDF y debe confirmarse junto con límites de formato y tamaño.
+El titular de un negocio aprobado puede publicar, consultar, editar y retirar productos. Cada ficha tiene nombre, descripción, precio, categoría, stock y una imagen de la galería. Al retirar un producto, queda archivado.
 
-Criterio de aceptación: los cambios válidos persisten y se reflejan en el catálogo cuando corresponde; un producto de otro propietario no se puede modificar. La política de retiro se define antes de implementar borrados.
+Si administración oculta un producto, el titular puede leer el motivo privado, corregir los datos y guardarlos. Al pulsar **Solicitar revisión**, el producto queda pendiente y se conserva la versión enviada hasta que administración decida **Volver a publicar** o **Mantener oculto**. En ambas decisiones se registra el motivo. El catálogo muestra el producto cuando vuelve a publicado y el emprendimiento sigue aprobado. Los productos archivados por su titular quedan fuera de este circuito.
 
 ### RF10 Panel de administración
 
@@ -90,11 +94,11 @@ El administrador podrá revisar solicitudes y moderar emprendimientos y producto
 
 Criterio de aceptación: las acciones administrativas requieren permisos verificados en Firebase y producen el estado público esperado. Se documentará cómo se asigna inicialmente al administrador.
 
-### RF11 Reportes propuestos
+### RF11 Reportes de productos y emprendimientos
 
-Se propone permitir a usuarios registrados reportar un producto o emprendimiento mediante un motivo. Administración podrá revisar el caso y registrar una resolución. Un reporte no ocultará automáticamente el contenido por sí solo.
+Desde una ficha pública, una cuenta registrada puede reportar un producto o emprendimiento. Elige Información incorrecta, Contenido inapropiado, Spam o engaño u Otro y describe el problema en hasta 500 caracteres. El contenido sigue visible mientras administración revisa el caso. El contacto por WhatsApp sigue siendo público.
 
-Criterio de aceptación propuesto: quien reporta puede enviar un caso válido sin ver reportes privados ajenos. Administración puede distinguir casos abiertos y resueltos. La inclusión y las reglas contra duplicados están pendientes.
+Cada cuenta puede tener un reporte pendiente por ficha. Un reintento devuelve el caso abierto y otras cuentas pueden enviar sus propios reportes. El autor ve pendiente, resuelto o descartado en Mi cuenta. Administración puede descartar con una explicación o resolver aplicando una medida sobre la ficha. El titular recibe el motivo de la medida y el reporte original queda disponible exclusivamente para su autor y administración.
 
 ### RF12 Destacados propuestos
 
@@ -108,7 +112,7 @@ Las notificaciones, la gestión dinámica de categorías y la administración av
 
 RN01 Una identidad personal puede explorar como comprador y gestionar como máximo un emprendimiento. Cambiar entre vistas no modifica su identidad ni otorga permisos nuevos.
 
-RN02 Las consultas públicas mostrarán únicamente contenido habilitado. La aprobación de emprendimientos forma parte del alcance; el circuito exacto de aprobación de cada producto está pendiente.
+RN02 El titular de un emprendimiento aprobado publica productos directamente. Un producto oculto por administración requiere una decisión administrativa para volver al catálogo.
 
 RN03 El stock será un número entero mayor o igual que cero. El propietario lo actualizará manualmente. Una consulta de WhatsApp no reserva unidades ni acredita una venta.
 
@@ -130,7 +134,7 @@ RN09 Suspender un emprendimiento oculta sus productos sin borrar su información
 
 Usuario: identidad de acceso, perfil personal y permisos. Emprendimiento: propietario, información pública, ubicación y estado de aprobación. Producto: emprendimiento de origen, contenido comercial, categoría, stock y estado de publicación.
 
-Según el alcance aprobado, se agregarán favoritos, contactos consultados, reportes y decisiones de moderación. Cada registro deberá tener un identificador estable y las fechas necesarias para su funcionamiento.
+La cuenta guarda vínculos privados a sus productos favoritos. Los reportes y las decisiones de moderación tienen identificadores estables y fechas para seguir su resolución. Los contactos consultados quedan como propuesta.
 
 Este listado es un modelo conceptual, no el esquema definitivo. Antes de diseñar colecciones, campos e índices, se describirán las consultas de cada pantalla y quién puede leer o modificar cada dato. Se propone Cloud Firestore para los datos; Firebase Authentication para el acceso y Cloud Storage para imágenes, sujeto a revisar su configuración y costos.
 
@@ -182,7 +186,7 @@ P03 Aprobación inicial del emprendimiento, cambios que exigen revisión, public
 
 P04 Campos obligatorios y límites de nombre, descripción, precio, stock, ubicación y fotografías; origen de categorías y localidades.
 
-P05 Quién puede reportar, qué motivos se admiten y cómo se resuelve y conserva cada caso. También debe definirse si habrá reportes de personas además de contenido.
+P05 Resuelto en RF11 para las fichas públicas de productos y emprendimientos.
 
 P06 Alcance de búsqueda por texto y métricas de contactos. Si se registran eventos de visitantes, se debe definir qué se almacena y cómo evitar interpretaciones incorrectas de esas cifras.
 

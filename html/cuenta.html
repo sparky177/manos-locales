@@ -7,30 +7,45 @@
   <link rel="icon" href="/assets/iconos/marca.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/css/base.css">
   <link rel="stylesheet" href="/css/acceso.css">
+  <link rel="stylesheet" href="/css/catalogo.css">
 </head>
 <body data-pagina="cuenta">
   <header class="cabecera">
     <div class="contenedor barra">
       <a class="marca" href="/"><img src="/assets/iconos/marca.svg" alt="">Manos Locales</a>
+      <form class="buscador" action="/" role="search">
+        <input id="buscar" name="q" type="search" aria-label="Buscar productos o emprendimientos" placeholder="Buscar productos o emprendimientos">
+        <button aria-label="Buscar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m15 15 6 6"/></svg></button>
+      </form>
       <nav aria-label="Principal">
-        <a href="/">Catálogo</a>
-        <a href="/html/panel-emprendedor.html">Mi emprendimiento</a>
-        <a href="/html/cuenta.html" aria-current="page">Mi cuenta</a>
+        <a href="/"><svg class="icono-nav" aria-hidden="true"><use href="/assets/iconos/navegacion.svg#productos"/></svg> Catálogo</a>
+        <a href="/html/panel-emprendedor.html"><svg class="icono-nav" aria-hidden="true"><use href="/assets/iconos/navegacion.svg#negocio"/></svg> Mi emprendimiento</a>
+        <a href="/html/cuenta.html" aria-current="page"><svg class="icono-nav" aria-hidden="true"><use href="/assets/iconos/navegacion.svg#perfil"/></svg> Mi cuenta</a>
         <button id="salir" hidden>Salir</button>
       </nav>
     </div>
   </header>
   <main class="contenedor">
     <p role="status" id="aviso"></p>
-    <section class="cuenta-caja caja">
+    <h1>Mi cuenta</h1>
+    <div class="panel-lateral"><section data-seccion="perfil" data-titulo="Mi perfil" class="caja">
       <img class="sello" src="/assets/iconos/marca.svg" alt="">
-      <h1>Mi cuenta</h1>
+      <h2>Mi perfil</h2>
       <p id="identidad"></p>
       <div class="acciones">
         <a class="accion" href="/html/panel-emprendedor.html">Ir a mi emprendimiento</a>
         <a class="accion secundaria" id="admin" href="/html/panel-admin.html" hidden>Ir a administración</a>
       </div>
     </section>
+    <section data-seccion="favoritos" data-titulo="Favoritos" id="favoritos" aria-labelledby="titulo-favoritos">
+      <h2 id="titulo-favoritos">Mis favoritos</h2>
+      <div class="grilla" id="mis-favoritos"></div>
+    </section>
+    <section data-seccion="reportes" data-titulo="Mis reportes" aria-labelledby="titulo-reportes">
+      <h2 id="titulo-reportes">Mis reportes</h2>
+      <div id="mis-reportes"></div>
+    </section>
+    </div>
   </main>
   <footer><div class="contenedor">Manos Locales <span>· Santa Cruz, Argentina</span></div></footer>
   <script type="module" src="/js/ui/navegacion.ui.js"></script>

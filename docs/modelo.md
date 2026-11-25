@@ -13,10 +13,14 @@ El proyecto depende de internet para confirmar las escrituras. La interfaz infor
 ```text
 Authentication (una identidad por cuenta)
 usuarios/{uid}
+  favoritos/{favoritoId}
 administradores/{uid}
 emprendimientos/{uid}
+  revision/actual
   productos/{productoId}
+    revision/actual
 decisiones/{decisionId}
+reportes/{reporteId}
 ```
 
 Una cuenta tiene un perfil privado y hasta un emprendimiento. Un emprendimiento tiene entre cero y muchos productos. Cada decisión refiere a un administrador y a un objeto moderado. El teléfono y la localidad se leen del emprendimiento, sin copiarlos en cada producto. El catálogo primero consulta los emprendimientos aprobados y después sus productos publicados. Así suspender un negocio impide nuevas lecturas públicas de todos sus productos con una sola escritura de estado. La vista abierta refleja el cambio al volver a cargar.
@@ -37,6 +41,12 @@ El documento identifica que la persona completó el alta. Correo y contraseña s
 |---|---|---|---|---|---|
 | ID del documento | Texto | Sí | Identificador | UID de Auth; ID del documento | uidAna |
 | creadoEn | Timestamp | Sí | — | Fecha de alta asignada por el servidor | 2026-11-18T15:00:00Z |
+
+## usuarios/uidAna/favoritos/uidTaller:p01
+
+Si Ana guarda una bufanda del Taller del Sur, Firestore conserva la relación en su cuenta. Cada documento contiene dos campos de texto, por ejemplo `{"tiendaId":"uidTaller","productoId":"p01"}`. El UID de Ana está en la ruta. El identificador del favorito se construye con los dos IDs para que pulsar guardar otra vez conserve un solo vínculo.
+
+Authentication ya proporciona la identidad. El precio, la imagen, el stock y el nombre vigentes se consultan en los documentos del negocio y del producto. Las reglas permiten a cada titular leer y quitar sus favoritos. Para guardar uno, el negocio debe estar aprobado y el producto publicado. Al volver a abrir Mis favoritos, una referencia a contenido retirado, oculto o suspendido se muestra como «Producto no disponible» y se puede quitar. Esto elimina únicamente el vínculo privado.
 
 ## emprendimientos/uidAna
 
@@ -60,6 +70,14 @@ Perfil comercial y solicitud de aprobación.
 | localidad | Texto | Sí | — | Localidad de Santa Cruz declarada por el propietario, de 1 a 80 caracteres | Río Gallegos |
 | whatsapp | Texto | Sí | — | Número comercial con país, de 8 a 15 dígitos sin cero inicial | 5490000000000 |
 | estado | Texto | Sí | — | pendiente, aprobado, rechazado o suspendido | aprobado |
+
+## emprendimientos/uidAna/revision/actual
+
+Este documento privado contiene la última decisión sobre el negocio. Guarda `estado`, `motivo`, `fecha` del servidor y `decisionId`, que identifica la entrada del historial. El titular y administración pueden leerlo. Administración guarda el nuevo estado del perfil, la revisión y la entrada de historial en una sola transacción. Si otro usuario modificó los datos comerciales que el administrador tenía a la vista, debe volver a revisarlos.
+
+Por ejemplo, administración rechaza una solicitud porque falta precisar la localidad. El titular lee el motivo, escribe «El Calafate» y guarda. El perfil sigue rechazado. Al pulsar **Volver a enviar a revisión**, cambia únicamente el estado del perfil a `pendiente`. Administración vuelve a ver la solicitud con los datos corregidos. La aprobación posterior habilita la ficha pública y la carga de productos. El historial conserva ambas decisiones.
+
+Un rechazo anterior a esta función también admite reenvío. Si falta el aviso privado, administración puede usar **Recuperar motivo anterior** para consultar la decisión histórica más reciente del negocio y confirmar que se comparta con el titular. Se conserva la fecha original.
 
 ## emprendimientos/uidAna/productos/p01
 
@@ -87,8 +105,23 @@ Mercadería del emprendimiento indicado en la ruta.
 | imagen | Texto | Sí | Galería | Clave de la galería: alfajores, brownie, cookies, lemon, trufas, budin o general | alfajores |
 | stock | Entero | Sí | — | Unidades disponibles entre 0 y 99999 | 10 |
 | precioCentavos | Entero | Sí | — | Importe en centavos de ARS entre 1 y 999999999 | 680000 |
-| estado | Texto | Sí | — | publicado, archivado por su propietario u oculto por administración | publicado |
+| estado | Texto | Sí | — | publicado, archivado, oculto o pendiente_revision | publicado |
 | creadoEn | Timestamp | Sí | — | Fecha del servidor que conserva el orden de novedades | 2026-11-18T15:30:00Z |
+
+### Revisión privada de un producto
+
+El campo `estado` del producto determina su visibilidad. El motivo de administración se guarda en `productos/{productoId}/revision/actual`, dentro del emprendimiento. La revisión privada tiene los mismos campos y permisos de lectura que la revisión del negocio. Administración guarda el estado, el motivo privado y la entrada del historial en una transacción.
+
+| Acción | Estado anterior | Estado siguiente | Responsable |
+|---|---|---|---|
+| Ocultar con motivo | publicado | oculto | Administración |
+| Corregir y guardar | oculto | oculto | Titular |
+| Solicitar revisión | oculto | pendiente_revision | Titular |
+| Volver a publicar con motivo | pendiente_revision | publicado | Administración |
+| Mantener oculto con un nuevo motivo | pendiente_revision | oculto | Administración |
+| Retirar del catálogo | publicado | archivado | Titular |
+
+Al reenviar se conserva el ID, el stock y la fecha de creación del producto. Si quedó oculto antes de incorporar el aviso privado, el titular también puede corregirlo y reenviarlo. Administración puede recuperar y compartir el motivo que conste en el historial mientras siga oculto.
 
 ## administradores/uidAdmin
 
@@ -123,10 +156,18 @@ El panel guarda cada decisión y el nuevo estado en un mismo lote de escritura.
 |---|---|---|---|---|---|
 | ID del documento | Texto | Sí | Identificador | ID automático del evento | d01 |
 | ruta | Texto | Sí | Ruta de Firestore | Ruta del documento moderado, hasta 500 caracteres | emprendimientos/uidAna |
-| estado | Texto | Sí | — | Resultado aprobado, rechazado, suspendido u oculto | aprobado |
+| estado | Texto | Sí | — | Resultado aprobado, rechazado, suspendido, oculto o publicado | aprobado |
 | motivo | Texto | Sí | — | Motivo de 1 a 250 caracteres | Datos comerciales revisados |
 | actor | Texto | Sí | UID | UID autenticado del administrador que decidió | uidAdmin |
 | fecha | Timestamp | Sí | — | Fecha y hora del servidor | 2026-11-18T15:15:00Z |
+
+## Reportes
+
+Cada caso registra `autor` (UID), `tiendaId`, `productoId` (vacío para un emprendimiento), `nombre` de la ficha al reportar, `motivo`, `detalle`, `estado` y `creadoEn`. Firestore verifica que la ficha sea pública y que el usuario autenticado sea el autor. Mi cuenta consulta por autor y la bandeja administrativa por estado pendiente.
+
+La subcolección `reporteActivo/{uid}` dentro de la ficha apunta al último caso enviado por esa cuenta. La app escribe el caso y el vínculo en una transacción. Cuando existe uno pendiente, un reintento devuelve el mismo caso. Una vez cerrado, un nuevo envío puede actualizar el vínculo sin perder el historial.
+
+Al cerrar se agregan `resueltoPor`, `cerradoEn` y `resultado`. **Descartado** guarda la explicación. **Resuelto** incluye también `decisionId` y confirma juntos el cierre, la medida aplicada al contenido, la entrada del historial administrativo y la revisión privada del titular. El resultado se comparte con el autor. La explicación de una medida también se muestra al titular, por lo que debe describir el problema sin identificar a quien reportó.
 
 ## Permisos y operaciones
 
@@ -135,10 +176,12 @@ El panel guarda cada decisión y el nuevo estado en un mismo lote de escritura.
 | Ver el catálogo y abrir WhatsApp | Cualquier visitante | Negocio aprobado y producto publicado. El clic conserva el stock. |
 | Crear o ver el perfil personal | Su titular | UID de la ruta igual al de la sesión. |
 | Solicitar alta y editar datos comerciales | Su titular | Estado inicial pendiente. La edición conserva el estado. |
+| Reenviar una solicitud | Su titular | Solo desde rechazado. El reenvío cambia únicamente el estado a pendiente. |
 | Aprobar, rechazar o suspender | Administrador | Rechazo desde pendiente y suspensión desde aprobado. Puede aprobar solicitudes, reactivar suspendidos o reconsiderar rechazados. |
-| Publicar o editar productos | Propietario aprobado | Precio, stock y datos válidos. Solo se editan productos publicados. |
+| Publicar o editar productos | Titular de un negocio aprobado | Puede editar las fichas publicadas y ocultas. Guardar conserva el estado. |
 | Retirar un producto propio | Propietario aprobado | Pasa de publicado a archivado. |
-| Ocultar una publicación | Administrador | Pasa de publicado a oculto. El propietario pierde la posibilidad de volver a publicarla con ese ID. |
+| Solicitar revisión del producto | Titular de un negocio aprobado | Pasa de oculto a pendiente_revision. |
+| Moderar una publicación | Administrador | Puede ocultar un producto publicado y decidir si un producto en revisión vuelve al catálogo o sigue oculto. |
 | Consultar inventario privado | Propietario o administrador | El público solo lee la selección visible. |
 | Consultar y registrar decisiones | Administrador | Motivo y autor obligatorios. Cada decisión del panel se confirma junto al cambio. |
 | Asignar administradores | Responsable del proyecto en consola | Los clientes solo comprueban su propia autorización. |

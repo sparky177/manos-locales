@@ -12,10 +12,14 @@
   <header class="cabecera">
     <div class="contenedor barra">
       <a class="marca" href="/"><img src="/assets/iconos/marca.svg" alt="">Manos Locales</a>
+      <form class="buscador" action="/" role="search">
+        <input id="buscar" name="q" type="search" aria-label="Buscar productos o emprendimientos" placeholder="Buscar productos o emprendimientos">
+        <button aria-label="Buscar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m15 15 6 6"/></svg></button>
+      </form>
       <nav aria-label="Principal">
-        <a href="/">Catálogo</a>
-        <a href="/html/panel-emprendedor.html">Mi emprendimiento</a>
-        <a href="/html/cuenta.html">Mi cuenta</a>
+        <a href="/"><svg class="icono-nav" aria-hidden="true"><use href="/assets/iconos/navegacion.svg#productos"/></svg> Catálogo</a>
+        <a href="/html/panel-emprendedor.html"><svg class="icono-nav" aria-hidden="true"><use href="/assets/iconos/navegacion.svg#negocio"/></svg> Mi emprendimiento</a>
+        <a href="/html/cuenta.html"><svg class="icono-nav" aria-hidden="true"><use href="/assets/iconos/navegacion.svg#perfil"/></svg> Mi cuenta</a>
         <button id="salir" hidden>Salir</button>
       </nav>
     </div>
@@ -23,9 +27,15 @@
   <main class="contenedor">
     <p role="status" id="aviso"></p>
     <h1>Administración</h1>
-    <section hidden id="moderacion">
+    <section hidden id="moderacion" class="panel-lateral">
+      <section data-seccion="solicitudes" data-titulo="Solicitudes"><h2>Solicitudes pendientes</h2><div id="pendientes"></div></section>
+      <section data-seccion="reportes" data-titulo="Reportes">
+      <h2>Reportes pendientes</h2>
+      <div id="reportes"></div>
+      </section><section data-seccion="negocios" data-titulo="Emprendimientos">
       <h2>Emprendimientos y productos</h2>
-      <div id="solicitudes"></div>
+      <label>Buscar emprendimiento<input type="search" id="buscar-tienda" placeholder="Nombre del negocio"></label>
+      <div id="solicitudes"></div></section>
     </section>
   </main>
   <footer><div class="contenedor">Manos Locales <span>· Santa Cruz, Argentina</span></div></footer>

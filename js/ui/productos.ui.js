@@ -2,6 +2,14 @@ import { nodo } from './mensajes.ui.js';
 import { moneda } from '../utilidades/moneda.js';
 import { rutaImagen } from '../datos/archivos.repository.js';
 
+const estados = {
+  publicado: 'Publicado',
+  archivado: 'Retirado por el titular',
+  oculto: 'Oculto por administración',
+  pendiente_revision: 'Pendiente de revisión',
+};
+export const estadoProducto = estado => estados[estado] ?? estado;
+
 export function enlace(texto, ruta, parametros, clase) {
   const link = nodo('a', texto, clase);
   const consulta = new URLSearchParams(parametros).toString();
@@ -16,7 +24,7 @@ export function foto(producto) {
   return imagen;
 }
 
-export function tarjeta(producto) {
+export function tarjeta(producto, controlFavorito = null) {
   const articulo = nodo('article', undefined, 'tarjeta');
   const ficha = enlace(producto.nombre, '/html/producto.html', {
     tienda: producto.tienda.id, producto: producto.id
@@ -26,6 +34,7 @@ export function tarjeta(producto) {
   const cuerpo = nodo('div', undefined, 'tarjeta-cuerpo');
   cuerpo.append(nodo('small', producto.categoria), titulo, nodo('strong', moneda(producto.precioCentavos)),
     nodo('p', producto.tienda.nombre + ' · ' + producto.tienda.localidad));
+  if (controlFavorito) cuerpo.append(controlFavorito(producto));
   articulo.append(foto(producto), cuerpo);
   return articulo;
 }

@@ -12,10 +12,14 @@
   <header class="cabecera">
     <div class="contenedor barra">
       <a class="marca" href="/"><img src="/assets/iconos/marca.svg" alt="">Manos Locales</a>
+      <form class="buscador" action="/" role="search">
+        <input id="buscar" name="q" type="search" aria-label="Buscar productos o emprendimientos" placeholder="Buscar productos o emprendimientos">
+        <button aria-label="Buscar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m15 15 6 6"/></svg></button>
+      </form>
       <nav aria-label="Principal">
-        <a href="/">Catálogo</a>
-        <a href="/html/panel-emprendedor.html" aria-current="page">Mi emprendimiento</a>
-        <a href="/html/cuenta.html">Mi cuenta</a>
+        <a href="/"><svg class="icono-nav" aria-hidden="true"><use href="/assets/iconos/navegacion.svg#productos"/></svg> Catálogo</a>
+        <a href="/html/panel-emprendedor.html" aria-current="page"><svg class="icono-nav" aria-hidden="true"><use href="/assets/iconos/navegacion.svg#negocio"/></svg> Mi emprendimiento</a>
+        <a href="/html/cuenta.html"><svg class="icono-nav" aria-hidden="true"><use href="/assets/iconos/navegacion.svg#perfil"/></svg> Mi cuenta</a>
         <button id="salir" hidden>Salir</button>
       </nav>
     </div>
@@ -24,19 +28,25 @@
     <p role="status" id="aviso"></p>
     <h1>Mi emprendimiento</h1>
     <p id="identidad"></p>
+    <div class="panel-lateral"><div data-seccion="negocio" data-titulo="Mi negocio">
     <p id="estado" role="status"></p>
+    <p id="dictamen" hidden></p>
     <section class="caja" hidden id="perfil">
       <h2>Datos del emprendimiento</h2>
       <form id="negocio">
         <label>Nombre comercial<input name="nombre" required maxlength="80"></label>
         <label>Descripción<textarea name="descripcion" maxlength="500" required></textarea></label>
-        <label>Localidad de Santa Cruz<input name="localidad" required maxlength="80"></label>
+        <label>Localidad de Santa Cruz<select name="localidad" required><option value="">Elegí una localidad</option></select></label>
         <label>WhatsApp comercial con código de país<input name="whatsapp" required inputmode="numeric" pattern="[1-9][0-9]{7,14}" placeholder="549…" aria-describedby="ayuda-whatsapp"></label>
-        <span id="ayuda-whatsapp">Para un celular argentino, ingresá 549, el código de área sin 0 y el número sin 15.</span>
+        <span id="ayuda-whatsapp">Los visitantes podrán contactarte por WhatsApp a este número. Para un celular argentino, ingresá 549, el código de área sin 0 y el número sin 15.</span>
         <button id="guardarPerfil">Enviar solicitud</button>
       </form>
+      <button type="button" id="reenviar" hidden>Volver a enviar a revisión</button>
     </section>
-    <section class="caja" hidden id="gestion">
+    </div><section class="caja" data-seccion="productos" data-titulo="Mis productos" hidden id="gestion">
+      <div id="lista-inventario"><div class="titulo-acciones"><h2>Mis productos</h2><button id="nuevo-producto">+ Publicar producto</button></div>
+      <div id="inventario"></div></div>
+      <div id="editor-producto" hidden>
       <h2 id="tituloProducto">Publicar producto</h2>
       <form id="producto">
         <label>Nombre<input name="nombre" required maxlength="80"></label>
@@ -51,9 +61,9 @@
         <button id="guardarProducto">Publicar</button>
         <button type="button" id="cancelar" hidden>Cancelar edición</button>
       </form>
-      <h2>Mis productos</h2>
-      <div id="inventario"></div>
+      </div>
     </section>
+    </div>
   </main>
   <footer><div class="contenedor">Manos Locales <span>· Santa Cruz, Argentina</span></div></footer>
   <script type="module" src="/js/ui/navegacion.ui.js"></script>

@@ -12,19 +12,26 @@
   <header class="cabecera">
     <div class="contenedor barra">
       <a class="marca" href="/"><img src="/assets/iconos/marca.svg" alt="">Manos Locales</a>
+      <form class="buscador" action="/" role="search">
+        <input id="buscar" name="q" type="search" aria-label="Buscar productos o emprendimientos" placeholder="Buscar productos o emprendimientos">
+        <button aria-label="Buscar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m15 15 6 6"/></svg></button>
+      </form>
       <nav aria-label="Principal">
-        <a href="/">Catálogo</a>
-        <a href="/html/panel-emprendedor.html">Mi emprendimiento</a>
-        <a href="/html/cuenta.html">Mi cuenta</a>
+        <a href="/"><svg class="icono-nav" aria-hidden="true"><use href="/assets/iconos/navegacion.svg#productos"/></svg> Catálogo</a>
+        <a href="/html/panel-emprendedor.html"><svg class="icono-nav" aria-hidden="true"><use href="/assets/iconos/navegacion.svg#negocio"/></svg> Mi emprendimiento</a>
+        <a href="/html/cuenta.html"><svg class="icono-nav" aria-hidden="true"><use href="/assets/iconos/navegacion.svg#perfil"/></svg> Mi cuenta</a>
         <button id="salir" hidden>Salir</button>
       </nav>
     </div>
   </header>
   <main class="contenedor">
     <p role="status" id="aviso"></p>
-    <a class="volver" href="/">← Volver al catálogo</a>
+    <a class="volver" href="/?vista=emprendimientos#listado">← Ver emprendimientos</a>
     <section id="tienda" hidden>
-      <div class="cabecera-tienda"><small id="localidad"></small><h1 id="nombre"></h1><p id="descripcion"></p></div>
+      <div class="cabecera-tienda">
+        <small id="localidad"></small><h1 id="nombre"></h1><p id="descripcion"></p>
+        <a class="accion" id="contactar" target="_blank" rel="noopener noreferrer">Contactar al emprendimiento por WhatsApp</a>
+      </div>
       <h2>Productos del emprendimiento</h2>
       <div class="grilla" id="productos"></div>
       <p id="vacio" hidden>Este emprendimiento todavía no tiene productos publicados.</p>

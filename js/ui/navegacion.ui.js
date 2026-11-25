@@ -1,4 +1,5 @@
 import { avisar, explicar } from './mensajes.ui.js';
+import { destinoTrasAcceso } from '../utilidades/ficha.js';
 
 const pagina = document.body.dataset.pagina;
 const controladores = {
@@ -24,7 +25,7 @@ async function iniciar() {
     return;
   }
   if (usuario && ['acceso', 'registro'].includes(pagina)) {
-    location.replace('/html/cuenta.html');
+    location.replace(destinoTrasAcceso());
     return;
   }
   const salir = document.getElementById('salir');

@@ -12,34 +12,56 @@
   <header class="cabecera">
     <div class="contenedor barra">
       <a class="marca" href="/"><img src="/assets/iconos/marca.svg" alt="">Manos Locales</a>
+      <form class="buscador" action="/" role="search">
+        <input id="buscar" name="q" type="search" aria-label="Buscar productos o emprendimientos" placeholder="Buscar productos o emprendimientos">
+        <button aria-label="Buscar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m15 15 6 6"/></svg></button>
+      </form>
       <nav aria-label="Principal">
-        <a href="/" aria-current="page">Catálogo</a>
-        <a href="/html/panel-emprendedor.html">Mi emprendimiento</a>
-        <a href="/html/cuenta.html">Mi cuenta</a>
+        <a href="/" aria-current="page"><svg class="icono-nav" aria-hidden="true"><use href="/assets/iconos/navegacion.svg#productos"/></svg> Catálogo</a>
+        <a href="/html/panel-emprendedor.html"><svg class="icono-nav" aria-hidden="true"><use href="/assets/iconos/navegacion.svg#negocio"/></svg> Mi emprendimiento</a>
+        <a href="/html/cuenta.html"><svg class="icono-nav" aria-hidden="true"><use href="/assets/iconos/navegacion.svg#perfil"/></svg> Mi cuenta</a>
         <button id="salir" hidden>Salir</button>
       </nav>
     </div>
   </header>
-  <main class="contenedor">
-    <p role="status" id="aviso"></p>
-    <section class="portada">
+  <main class="inicio">
+    <p role="status" class="contenedor" id="aviso"></p>
+    <section class="portada" id="portada"><div class="contenedor portada-interior">
       <div class="portada-texto">
         <small>Hecho en Santa Cruz</small>
         <h1>Encontrá algo hecho<br><em>cerca tuyo.</em></h1>
         <p>Descubrí piezas únicas, sabores locales y productos de nuestra comunidad.</p>
-        <a class="accion" href="#listado">Explorar productos <span aria-hidden="true">↓</span></a>
+        <a class="accion" href="#listado">Explorar el catálogo <span aria-hidden="true">↓</span></a>
       </div>
-      <div class="portada-foto"><img src="/assets/imagenes/alfajores.png" alt="Alfajores artesanales"></div>
+      <button type="button" class="portada-foto" id="foto-portada" aria-label="Pausar carrusel"><img src="/assets/imagenes/alfajores.png" alt="Alfajores artesanales"></button></div>
     </section>
-    <section id="listado">
-      <div class="encabezado-lista"><h2>Catálogo local</h2><p id="conteo" aria-live="polite">Cargando productos…</p></div>
-      <form class="filtros" id="filtros">
-        <label>Buscar<input id="buscar" type="search" placeholder="Producto o emprendimiento"></label>
-        <label>Categoría<select id="categoria"><option value="">Todas las categorías</option></select></label>
+    <section id="listado" class="contenedor">
+      <a id="volver-inicio" href="/" hidden>← Volver al catálogo</a>
+      <div class="encabezado-lista"><h2 id="titulo-listado">Catálogo local</h2><p id="conteo" aria-live="polite">Cargando…</p></div>
+      <nav class="vistas-catalogo" aria-label="Qué buscar">
+        <a id="ver-productos" href="/#listado">Productos</a>
+        <a id="ver-negocios" href="/?vista=emprendimientos#listado">Emprendimientos</a>
+      </nav>
+      <a class="accion secundaria" id="abrir-filtros" href="/?q="><svg class="icono-nav" aria-hidden="true"><use href="/assets/iconos/navegacion.svg#filtros"/></svg> Filtros</a>
+      <button type="button" class="movil" id="alternar-filtros" aria-controls="filtros" aria-expanded="false" hidden>Filtros</button>
+      <div id="zona-resultados">
+      <form hidden class="filtros" id="filtros">
+        <h3>Filtros</h3>
+        <label id="campo-categoria">Categoría<select id="categoria"><option value="">Todas las categorías</option></select></label>
         <label>Localidad<select id="localidad"><option value="">Todas las localidades</option></select></label>
+        <label id="campo-precio" hidden>Hasta ($)<input id="hasta" type="text" inputmode="decimal" placeholder="Sin límite" aria-describedby="error-precio"><span id="error-precio" hidden>Ingresá un importe como 2000 o 2.000,50.</span></label>
+
+        <button type="button" class="secundaria" id="limpiar" hidden>Limpiar filtros</button>
       </form>
-      <div class="grilla" id="productos"></div>
-      <div class="caja" id="vacio" hidden><p>No hay productos para esta búsqueda.</p><button id="limpiar">Limpiar filtros</button></div>
+      <div>
+        <label id="campo-orden" hidden>Ordenar por<select id="orden">
+          <option value="recientes">Más recientes</option>
+          <option value="menor">Menor precio primero</option>
+          <option value="mayor">Mayor precio primero</option>
+        </select></label>
+      <div class="grilla" id="resultados"></div>
+      <div class="caja" id="vacio" hidden><p id="sin-resultados"></p></div>
+      </div></div>
     </section>
   </main>
   <footer><div class="contenedor">Manos Locales <span>· Santa Cruz, Argentina</span></div></footer>

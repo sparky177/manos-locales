@@ -5,10 +5,93 @@ service cloud.firestore {
     function admin() { return request.auth != null && exists(/databases/$(db)/documents/administradores/$(request.auth.uid)); }
     function aprobado(uid) { return get(/databases/$(db)/documents/emprendimientos/$(uid)).data.estado == 'aprobado'; }
     function texto(v,n) { return v is string && v.size() > 0 && v.size() <= n; }
+    function decisionCoincide(ruta, estado) {
+      let r = request.resource.data;
+      let decision = getAfter(/databases/$(db)/documents/decisiones/$(r.decisionId)).data;
+      return r.keys().hasOnly(['estado','motivo','fecha','decisionId'])
+        && decision.ruta == ruta && decision.estado == r.estado && estado == r.estado
+        && decision.motivo == r.motivo && decision.fecha == r.fecha;
+    }
+    function conRevision(referencia) {
+      let revision = getAfter(referencia).data;
+      return revision.estado == request.resource.data.estado && revision.fecha == request.time;
+    }
+    function rutaReportada(r) {
+      return 'emprendimientos/' + r.tiendaId + (r.productoId == '' ? '' : '/productos/' + r.productoId);
+    }
+    function indiceReporte(r) {
+      return r.productoId == ''
+        ? /databases/$(db)/documents/emprendimientos/$(r.tiendaId)/reporteActivo/$(r.autor)
+        : /databases/$(db)/documents/emprendimientos/$(r.tiendaId)/productos/$(r.productoId)/reporteActivo/$(r.autor);
+    }
+    function vinculoValido(autor, tienda, producto) {
+      let id = request.resource.data.reporteId;
+      let r = getAfter(/databases/$(db)/documents/reportes/$(id)).data;
+      return propio(autor) && request.resource.data.keys().hasOnly(['reporteId'])
+        && r.autor == autor && r.tiendaId == tienda && r.productoId == producto
+        && r.estado == 'pendiente' && r.creadoEn == request.time;
+    }
+    function ultimoCerrado() {
+      return get(/databases/$(db)/documents/reportes/$(resource.data.reporteId)).data.estado in ['resuelto','descartado'];
+    }
+    match /reportes/{id} {
+      function contenidoPublico(r) {
+        let tienda = get(/databases/$(db)/documents/emprendimientos/$(r.tiendaId)).data;
+        return tienda.estado == 'aprobado' && (r.productoId == '' ? r.nombre == tienda.nombre :
+          productoPublico(r));
+      }
+      function productoPublico(r) {
+        let p = get(/databases/$(db)/documents/emprendimientos/$(r.tiendaId)/productos/$(r.productoId)).data;
+        return p.estado == 'publicado' && r.nombre == p.nombre;
+      }
+      function altaValida(r) {
+        return r.keys().hasOnly(['autor','tiendaId','productoId','nombre','motivo','detalle','estado','creadoEn'])
+          && propio(r.autor) && r.tiendaId is string && r.tiendaId.matches('^[^/]+$')
+          && r.productoId is string && r.productoId.matches('^[^/]*$')
+          && r.motivo in ['Información incorrecta','Contenido inapropiado','Spam o engaño','Otro']
+          && texto(r.detalle,500) && r.detalle.matches('(?s).*\\S.*')
+          && r.estado == 'pendiente' && r.creadoEn == request.time && contenidoPublico(r)
+          && getAfter(indiceReporte(r)).data.reporteId == id;
+      }
+      function medidaAplicada(r) {
+        let decision = getAfter(/databases/$(db)/documents/decisiones/$(r.decisionId)).data;
+        let revision = r.productoId == ''
+          ? getAfter(/databases/$(db)/documents/emprendimientos/$(r.tiendaId)/revision/actual).data
+          : getAfter(/databases/$(db)/documents/emprendimientos/$(r.tiendaId)/productos/$(r.productoId)/revision/actual).data;
+        return revision.decisionId == r.decisionId && decision.ruta == rutaReportada(r)
+          && decision.estado == (r.productoId == '' ? 'suspendido' : 'oculto')
+          && decision.fecha == request.time && decision.actor == request.auth.uid;
+      }
+      function cierreValido(r) {
+        return resource.data.estado == 'pendiente' && r.resueltoPor == request.auth.uid
+          && r.cerradoEn == request.time && texto(r.resultado,250)
+          && r.diff(resource.data).affectedKeys().hasOnly(['estado','resueltoPor','cerradoEn','resultado','decisionId'])
+          && ((r.estado == 'descartado' && !('decisionId' in r)) || (r.estado == 'resuelto' && medidaAplicada(r)));
+      }
+      allow read: if admin() || propio(resource.data.autor);
+      allow create: if altaValida(request.resource.data);
+      allow update: if admin() && cierreValido(request.resource.data);
+    }
     match /administradores/{uid} { allow get: if propio(uid); }
     match /usuarios/{uid} {
       allow get: if propio(uid);
       allow create: if propio(uid) && request.resource.data.keys().hasOnly(['creadoEn']) && request.resource.data.creadoEn == request.time;
+      match /favoritos/{id} {
+        function productoVisible(d) {
+          return aprobado(d.tiendaId)
+            && get(/databases/$(db)/documents/emprendimientos/$(d.tiendaId)/productos/$(d.productoId)).data.estado == 'publicado';
+        }
+        function favoritoValido(d) {
+          return d.keys().hasOnly(['tiendaId','productoId'])
+            && d.tiendaId is string && d.tiendaId.matches('^[^/]+$')
+            && d.productoId is string && d.productoId.matches('^[^/]+$')
+            && id == d.tiendaId.replace('%','%25').replace(':','%3A') + ':' + d.productoId
+            && productoVisible(d);
+        }
+        allow read, delete: if propio(uid);
+        allow create: if propio(uid) && favoritoValido(request.resource.data);
+        allow update: if propio(uid) && request.resource.data == resource.data && productoVisible(resource.data);
+      }
     }
     match /emprendimientos/{uid} {
       function perfilValido() {
@@ -19,13 +102,30 @@ service cloud.firestore {
       }
       allow read: if propio(uid) || admin() || resource.data.estado == 'aprobado';
       allow create: if propio(uid) && perfilValido() && request.resource.data.estado == 'pendiente';
+      function soloEstado() {
+        return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['estado']);
+      }
       allow update: if perfilValido() && (
         (propio(uid) && request.resource.data.estado == resource.data.estado) ||
-        (admin() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['estado']) && (
+        (propio(uid) && soloEstado() && resource.data.estado == 'rechazado' && request.resource.data.estado == 'pendiente') ||
+        (admin() && soloEstado() && conRevision(/databases/$(db)/documents/emprendimientos/$(uid)/revision/actual) && (
           (request.resource.data.estado == 'aprobado' && resource.data.estado in ['pendiente','rechazado','suspendido']) ||
           (request.resource.data.estado == 'rechazado' && resource.data.estado == 'pendiente') ||
           (request.resource.data.estado == 'suspendido' && resource.data.estado == 'aprobado')
         )));
+      match /revision/actual {
+        function revisionValida() {
+          return decisionCoincide('emprendimientos/' + uid, getAfter(/databases/$(db)/documents/emprendimientos/$(uid)).data.estado);
+        }
+        allow get: if propio(uid) || admin();
+        allow create: if admin() && revisionValida();
+        allow update: if admin() && revisionValida() && request.resource.data.fecha == request.time;
+      }
+      match /reporteActivo/{autor} {
+        allow get: if propio(autor);
+        allow create: if vinculoValido(autor, uid, '');
+        allow update: if vinculoValido(autor, uid, '') && ultimoCerrado();
+      }
       match /productos/{id} {
         function valido() {
           let d = request.resource.data;
@@ -38,16 +138,44 @@ service cloud.firestore {
         }
         allow read: if propio(uid) || admin() || (aprobado(uid) && resource.data.estado == 'publicado');
         allow create: if propio(uid) && aprobado(uid) && valido() && request.resource.data.estado == 'publicado' && request.resource.data.creadoEn == request.time;
-        allow update: if resource.data.estado == 'publicado' && (
-          (propio(uid) && aprobado(uid) && valido() && request.resource.data.creadoEn == resource.data.creadoEn && request.resource.data.estado in ['publicado','archivado']) ||
-          (admin() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['estado']) && request.resource.data.estado == 'oculto'));
+        function cambioDelTitular() {
+          let anterior = resource.data.estado;
+          let nuevo = request.resource.data.estado;
+          return (anterior == nuevo && anterior in ['publicado','oculto'])
+            || (anterior == 'publicado' && nuevo == 'archivado')
+            || (soloEstado() && anterior == 'oculto' && nuevo == 'pendiente_revision');
+        }
+        function decisionDeProducto() {
+          let anterior = resource.data.estado;
+          let nuevo = request.resource.data.estado;
+          return soloEstado() && ((anterior == 'publicado' && nuevo == 'oculto')
+            || (anterior == 'pendiente_revision' && nuevo in ['publicado','oculto']))
+            && conRevision(/databases/$(db)/documents/emprendimientos/$(uid)/productos/$(id)/revision/actual);
+        }
+        allow update: if aprobado(uid) && (
+          (propio(uid) && valido() && request.resource.data.creadoEn == resource.data.creadoEn && cambioDelTitular())
+          || (admin() && decisionDeProducto()));
+        match /revision/actual {
+          function revisionValida() {
+            return decisionCoincide('emprendimientos/' + uid + '/productos/' + id,
+              getAfter(/databases/$(db)/documents/emprendimientos/$(uid)/productos/$(id)).data.estado);
+          }
+          allow get: if propio(uid) || admin();
+          allow create: if admin() && revisionValida();
+          allow update: if admin() && revisionValida() && request.resource.data.fecha == request.time;
+        }
+        match /reporteActivo/{autor} {
+          allow get: if propio(autor);
+          allow create: if vinculoValido(autor, uid, id);
+          allow update: if vinculoValido(autor, uid, id) && ultimoCerrado();
+        }
       }
     }
     match /decisiones/{id} {
       allow read: if admin();
       allow create: if admin() && request.resource.data.keys().hasOnly(['ruta','estado','motivo','actor','fecha'])
         && texto(request.resource.data.ruta,500) && texto(request.resource.data.motivo,250)
-        && request.resource.data.estado in ['aprobado','suspendido','rechazado','oculto']
+        && request.resource.data.estado in ['aprobado','suspendido','rechazado','oculto','publicado']
         && request.resource.data.actor == request.auth.uid && request.resource.data.fecha == request.time;
     }
   }
